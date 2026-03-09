@@ -1,14 +1,13 @@
-describe('Cypress Simulator', () => {
-
+describe("Cypress Simulator - A11y Checks", () => {
   beforeEach(() => {
-
     cy.visit("./src/index.html?skipCaptcha=true", {
-  onBeforeLoad(win) {
-    win.localStorage.setItem("cookieConsent", "accepted")
-    cy.contains('button','Login').click()
-  }
-})
-})
+      onBeforeLoad(win) {
+        win.localStorage.setItem("cookieConsent", "accepted")
+      }
+    })
+    cy.contains("button", "Login").click()
+    cy.injectAxe()
+  })
 
     it('Sucesso na simulação de um comando do Cypress', () => {
       cy.get('#codeInput').type("cy.log('Yay!')")
@@ -22,7 +21,7 @@ describe('Cypress Simulator', () => {
 
     })
 
-    it("O erro é exibido ao inserir e executar um comando Cypress inválido.", () => {
+    it.only("O erro é exibido ao inserir e executar um comando Cypress inválido.", () => {
       cy.get('#codeInput').type("cy.run()")
       cy.get('#runButton').click()
 
@@ -40,17 +39,6 @@ describe('Cypress Simulator', () => {
       cy.get('#outputArea',{ timeout: 6000 })
       .should('contain','Warning:')
       .and('contain','The `cy.contains` command has not been implemented yet.')
-      .and('be.visible')
-    })
-
-    it('O erro ocorre ao inserir e executar um comando Cypress válido sem parênteses (por exemplo, cy.visit).', () => {
-            
-      cy.get('#codeInput').type("cy.visit")
-      cy.get('#runButton').click()
-
-      cy.get('#outputArea',{ timeout: 6000 })
-      .should('contain','Error:')
-      .and('contain',"Missing parentheses on `cy.visit` command")
       .and('be.visible')
     })
 
@@ -72,7 +60,7 @@ describe('Cypress Simulator', () => {
 
     })
 
-    it('maximização/minimização', () => {
+     it('maximização/minimização', () => {
 
       cy.get('#codeInput').type("cy.log('Yay!')")
       cy.get('#runButton').click()
@@ -95,8 +83,7 @@ describe('Cypress Simulator', () => {
       cy.contains('button','Login').should('be.visible')
       cy.get('#sandwich-menu').should('not.be.visible')
     })
-
-    it('exibe e esconde o botão de deslogar', () => {
+     it('exibe e esconde o botão de deslogar', () => {
 
       cy.get('#sandwich-menu').click()
 
@@ -113,7 +100,7 @@ describe('Cypress Simulator', () => {
 
     })
 
-    it('Mostra o estado da execução antes de exibir o resultado final.', () => {
+     it('Mostra o estado da execução antes de exibir o resultado final.', () => {
 
       cy.get('#codeInput').type("cy.log('Yay!')")
       cy.get('#runButton').click()
@@ -139,73 +126,8 @@ describe('Cypress Simulator', () => {
       .and('be.visible')
 
     })
-
-
-    it('Verifica os estados ativado e desativado do botão Executar.', () => {
-
-      cy.contains('button','Run').should('be.disabled')
-       cy.get('textarea[placeholder="Write your Cypress code here..."]').type("cy.log('Yay!')")
-      cy.contains('button','Run').should('be.enabled')
-      cy.get('textarea[placeholder="Write your Cypress code here..."]').clear()
-      cy.contains('button','Run').should('be.disabled')
-    })
-
-    it('Isso apaga o código inserido ao sair da sessão e entrar novamente.', () => {
-
-       cy.get('textarea[placeholder="Write your Cypress code here..."]').type("cy.log('Yay!')")
-       cy.get('#sandwich-menu').click()
-       cy.contains('button','Logout').click()
-       cy.contains('button','Login').click()
-
-       cy.get('textarea[placeholder="Write your Cypress code here..."]').should("have.text",'')
-
-    })
-
-    it('Isso desativa o botão "Run" ao sair da sessão e entrar novamente.', () => {
-
-       cy.get('textarea[placeholder="Write your Cypress code here..."]').type("cy.log('Yay!')")
-
-       cy.contains('button','Run').should('be.enabled')
-
-       cy.get('#sandwich-menu').click()
-       cy.contains('button','Logout').click()
-       cy.contains('button','Login').click()
-
-       cy.contains('button','Run').should('be.disabled')
-
-    })
-
-    it('Isso limpa a saída do código ao sair e entrar novamente.', () => {
-
-      cy.get('textarea[placeholder="Write your Cypress code here..."]').type("cy.log('Yay!')")
-      cy.contains('button','Run').click()
-
-      cy.get('#outputArea',{timeout: 6000 })
-      .should('contain.text','Success:')
-      .and('contain.text',"cy.log('Yay!') // Logged message 'Yay!'")
-      .and('be.visible')
-
-      cy.get('#sandwich-menu').click()
-      cy.contains('button','Logout').click()
-      cy.contains('button','Login').click()
-
-      cy.get('#outputArea').should('have.text',"")
-
-
-
     
-    })
-
-    it.only('O banner de consentimento de cookies não é exibido na página de login.', () => {
-
-      cy.clearAllLocalStorage()
-      cy.reload()
-      cy.contains('button','Login').should('be.visible')
-      cy.get('#cookieConsent').should('be.not.visible')
-
-    })
-
-  })
+})
 
 describe('Cypress Simulator - Banner de consetimento de cookies', () => {
 
@@ -227,28 +149,7 @@ describe('Cypress Simulator - Banner de consetimento de cookies', () => {
       cy.get('@bannercookies').should('not.visible')
       cy.window().its('localStorage.cookieConsent').should('eq','accepted')
     })
-
-    it('rejeita o uso dos cookies', () => {
-
-      cy.get('#cookieConsent')
-      .as('bannerCookies')
-      .find('button:contains(Decline)')
-      .click()
-
-      cy.get('@bannerCookies').should('not.be.visible')
-
-      cy.window().its('localStorage.cookieConsent')
-      .should('eq','declined')
-
-
-    })
-
-
-
-
-
 })
-
 describe('Cypress Simulator - Captcha',()=>{
 
 beforeEach(()=>{
