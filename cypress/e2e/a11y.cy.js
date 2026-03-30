@@ -9,7 +9,7 @@ describe("Cypress Simulator - A11y Checks", () => {
     cy.injectAxe()
   })
 
-    it('Sucesso na simulação de um comando do Cypress', () => {
+  it('Sucesso na simulação de um comando do Cypress', () => {
       cy.get('#codeInput').type("cy.log('Yay!')")
       cy.get('#runButton').click()
 
@@ -20,17 +20,16 @@ describe("Cypress Simulator - A11y Checks", () => {
 
 
     })
-
-    it.only("O erro é exibido ao inserir e executar um comando Cypress inválido.", () => {
-      cy.get('#codeInput').type("cy.run()")
+    it('O erro ocorre ao inserir e executar um comando Cypress válido sem parênteses (por exemplo, cy.visit).', () => {
+            
+      cy.get('#codeInput').type("cy.visit")
       cy.get('#runButton').click()
 
       cy.get('#outputArea',{ timeout: 6000 })
       .should('contain','Error:')
-      .and('contain','Invalid Cypress command: cy.run()')
+      .and('contain',"Missing parentheses on `cy.visit` command")
       .and('be.visible')
     })
-
     it("Exibe um aviso ao inserir e executar um comando Cypress não implementado (por exemplo, cy.contains('Login')).", () => {
       
       cy.get('#codeInput').type("cy.contains('Login')")
@@ -41,7 +40,6 @@ describe("Cypress Simulator - A11y Checks", () => {
       .and('contain','The `cy.contains` command has not been implemented yet.')
       .and('be.visible')
     })
-
     it('Ele pede ajuda e obtém comandos e exemplos comuns do Cypress, com um link para a documentação.', () => {
 
       cy.get('#codeInput').type("help")
@@ -59,8 +57,7 @@ describe("Cypress Simulator - A11y Checks", () => {
   
 
     })
-
-     it('maximização/minimização', () => {
+    it('maximização/minimização', () => {
 
       cy.get('#codeInput').type("cy.log('Yay!')")
       cy.get('#runButton').click()
@@ -74,7 +71,6 @@ describe("Cypress Simulator - A11y Checks", () => {
       cy.get('.expand-collapse').click()
       cy.get('#collapseIcon').should('not.be.visible')
     })
-
     it('Sucesso ao deslogar', () => {
 
       cy.get('.lucide.lucide-menu').click()
@@ -83,7 +79,7 @@ describe("Cypress Simulator - A11y Checks", () => {
       cy.contains('button','Login').should('be.visible')
       cy.get('#sandwich-menu').should('not.be.visible')
     })
-     it('exibe e esconde o botão de deslogar', () => {
+    it('exibe e esconde o botão de deslogar', () => {
 
       cy.get('#sandwich-menu').click()
 
@@ -99,8 +95,7 @@ describe("Cypress Simulator - A11y Checks", () => {
 
 
     })
-
-     it('Mostra o estado da execução antes de exibir o resultado final.', () => {
+    it('Mostra o estado da execução antes de exibir o resultado final.', () => {
 
       cy.get('#codeInput').type("cy.log('Yay!')")
       cy.get('#runButton').click()
@@ -126,39 +121,11 @@ describe("Cypress Simulator - A11y Checks", () => {
       .and('be.visible')
 
     })
+
     
-})
+ 
 
-describe('Cypress Simulator - Banner de consetimento de cookies', () => {
-
-  beforeEach(() => {
-
-    cy.visit("./src/index.html?skipCaptcha=true")
-    cy.contains('button','Login').click()
-})
-
-
-
-      it('Ao utilizar cookies, você concorda com o seu uso.', () => {
-
-      cy.get('#cookieConsent')
-      .as('bannercookies')
-      .find('button:contains(Accept)')
-      .click()
-
-      cy.get('@bannercookies').should('not.visible')
-      cy.window().its('localStorage.cookieConsent').should('eq','accepted')
-    })
-})
-describe('Cypress Simulator - Captcha',()=>{
-
-beforeEach(()=>{
-  cy.visit("./src/index.html")
-  cy.contains('button','Login').click()
-
-})
-
-  it('Isso desativa o botão de verificação do captcha quando nenhuma resposta é fornecida ou quando o captcha é apagado.',()=>{
+    it.only('Isso desativa o botão de verificação do captcha quando nenhuma resposta é fornecida ou quando o captcha é apagado.',()=>{
 
     cy.contains('button','Verify')
     .as('botaoVerificacao')
@@ -176,8 +143,7 @@ beforeEach(()=>{
     .as('botaoVerificacao')
     .should('be.disabled')
   })
-
-  it('Aparece um erro referente a uma resposta incorreta do captcha e o sistema retorna ao seu estado inicial.',()=>{
+   it('Aparece um erro referente a uma resposta incorreta do captcha e o sistema retorna ao seu estado inicial.',()=>{
   
      cy.get('input[placeholder="Enter your answer"]')
     .as('Campoinput')
@@ -198,5 +164,47 @@ beforeEach(()=>{
     .should('be.disabled')
 
 })
+
 })
 
+ describe('Cypress Simulator - Banner de consetimento de cookies', () => {
+
+  beforeEach(() => {
+
+    cy.visit("./src/index.html?skipCaptcha=true")
+    cy.contains('button','Login').click()
+})
+
+
+
+      it('Ao utilizar cookies, você concorda com o seu uso.', () => {
+
+      cy.get('#cookieConsent')
+      .as('bannercookies')
+      .find('button:contains(Accept)')
+      .click()
+
+      cy.get('@bannercookies').should('not.visible')
+      cy.window().its('localStorage.cookieConsent').should('eq','accepted')
+    })
+
+    it('rejeita o uso dos cookies', () => {
+
+      cy.get('#cookieConsent')
+      .as('bannerCookies')
+      .find('button:contains(Decline)')
+      .click()
+
+      cy.get('@bannerCookies').should('not.be.visible')
+
+      cy.window().its('localStorage.cookieConsent')
+      .should('eq','declined')
+
+
+    })
+
+
+
+
+
+})

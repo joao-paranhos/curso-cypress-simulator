@@ -196,7 +196,7 @@ describe('Cypress Simulator', () => {
     
     })
 
-    it.only('O banner de consentimento de cookies não é exibido na página de login.', () => {
+    it('O banner de consentimento de cookies não é exibido na página de login.', () => {
 
       cy.clearAllLocalStorage()
       cy.reload()
@@ -217,7 +217,7 @@ describe('Cypress Simulator - Banner de consetimento de cookies', () => {
 
 
 
-      it('Ao utilizar cookies, você concorda com o seu uso.', () => {
+      it.only('Ao utilizar cookies, você concorda com o seu uso.', () => {
 
       cy.get('#cookieConsent')
       .as('bannercookies')
@@ -228,7 +228,7 @@ describe('Cypress Simulator - Banner de consetimento de cookies', () => {
       cy.window().its('localStorage.cookieConsent').should('eq','accepted')
     })
 
-    it('rejeita o uso dos cookies', () => {
+    it.only('rejeita o uso dos cookies', () => {
 
       cy.get('#cookieConsent')
       .as('bannerCookies')
